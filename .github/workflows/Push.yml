@@ -1,0 +1,28 @@
+
+name: push
+
+on: push
+
+concurrency:
+
+  group: push
+  cancel-in-progress: true
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    if : ${{ startsWith( github.event.head_commit.message, '!' ) }}
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+      - name: Install libraries
+        run: sudo apt update && sudo apt install musl musl-dev musl-tools
+      - name: Install latest toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+            target: x86_64-unknown-linux-musl
+      - name: Test
+        run: cargo test --target x86_64-unknown-linux-musl

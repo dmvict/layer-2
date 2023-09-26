@@ -1,0 +1,17 @@
+[workspace]
+members = [
+  "service-common",
+  "user-app",
+  "email-app",
+  "upload-app",
+  "payment-app",
+  "download-app",
+  "product-processor-app",
+  "pdf-app",
+  "chat-evo1",
+]
+resolver = "2"
+
+[workspace.dependencies]
+actix-web = { version = "4.4", features = ["rustls"] }
+reqwest = { version = "0.11.20", default-features = false, features = ["rustls-tls", "json"] }

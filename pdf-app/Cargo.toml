@@ -1,0 +1,16 @@
+[package]
+name = "pdf-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+serde_json = "1"
+anyhow = "1"
+actix-web = { workspace = true }
+chrono = "0.4"
+service-common = { path = "../service-common" }
+reqwest = { workspace = true }
+wkhtmltopdf = "0.4"
+tera = "1.19"

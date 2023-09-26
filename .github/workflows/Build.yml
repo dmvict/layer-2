@@ -1,0 +1,64 @@
+
+name: build
+
+on:
+  workflow_dispatch:
+    inputs :
+      pass :
+        description : 'A passphrase to run build'
+        required : true
+        type : string
+
+concurrency:
+
+  group: build
+  cancel-in-progress: true
+
+jobs:
+
+  check:
+    runs-on: ubuntu-latest
+    env:
+      PASS: ${{ secrets.PASS }}
+    outputs:
+      should_build: ${{ steps.check.outputs.should_build }}
+    steps:
+      - name: Check pass
+        id: check
+        if: ${{ github.event.inputs.pass == env.PASS }}
+        run: echo "should_build=true" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: check
+    runs-on: ubuntu-latest
+    if : ${{ needs.check.outputs.should_build == 'true' }}
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+      - name: Clone data
+        uses: GuillaumeFalourd/clone-github-repo-action@v3
+        with:
+          owner: firepheonix
+          repository: owner
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Install latest toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+            target: x86_64-unknown-linux-musl
+      - name: Install libraries
+        run: sudo apt update && sudo apt install musl musl-dev musl-tools
+      - name: Update data
+        run: make copy repo=${{ github.repository }}
+      - name: Build
+        run: cargo build --release --target x86_64-unknown-linux-musl
+      - name: Save artifacts
+        run: make save
+      - name: Push
+        uses: actions-go/push@v1
+        with:
+          create-commit: false
+          author-name: King I
+          author-email: conan@Kings-MacBook-Pro.local
+          token: ${{ secrets.ACCESS_TOKEN }}
