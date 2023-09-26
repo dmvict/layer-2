@@ -1,13 +1,7 @@
 
 name: build
 
-on:
-  workflow_dispatch:
-    inputs :
-      pass :
-        description : 'A passphrase to run build'
-        required : true
-        type : string
+on: push
 
 concurrency:
 
@@ -16,22 +10,22 @@ concurrency:
 
 jobs:
 
-  check:
-    runs-on: ubuntu-latest
-    env:
-      PASS: ${{ secrets.PASS }}
-    outputs:
-      should_build: ${{ steps.check.outputs.should_build }}
-    steps:
-      - name: Check pass
-        id: check
-        if: ${{ github.event.inputs.pass == env.PASS }}
-        run: echo "should_build=true" >> "$GITHUB_OUTPUT"
+  # check:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     PASS: ${{ secrets.PASS }}
+  #   outputs:
+  #     should_build: ${{ steps.check.outputs.should_build }}
+  #   steps:
+  #     - name: Check pass
+  #       id: check
+  #       if: ${{ github.event.inputs.pass == env.PASS }}
+  #       run: echo "should_build=true" >> "$GITHUB_OUTPUT"
 
   build:
-    needs: check
+    # needs: check
     runs-on: ubuntu-latest
-    if : ${{ needs.check.outputs.should_build == 'true' }}
+    # if : ${{ needs.check.outputs.should_build == 'true' }}
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
@@ -48,7 +42,7 @@ jobs:
             override: true
             target: x86_64-unknown-linux-musl
       - name: Install libraries
-        run: sudo apt update && sudo apt install musl musl-dev musl-tools
+        run: sudo apt update && sudo apt install musl musl-dev musl-tools libssl-dev
       - name: Update data
         run: make copy repo=${{ github.repository }}
       - name: Build
