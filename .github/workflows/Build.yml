@@ -29,12 +29,12 @@ jobs:
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
-      - name: Clone data
-        # uses: GuillaumeFalourd/clone-github-repo-action@v3
-        # with:
-        #   owner: firepheonix
-        #   repository: owner
-        #   access-token: ${{ secrets.ACCESS_TOKEN }}
+      # - name: Clone data
+      #   uses: GuillaumeFalourd/clone-github-repo-action@v3
+      #   with:
+      #     owner: firepheonix
+      #     repository: owner
+      #     access-token: ${{ secrets.ACCESS_TOKEN }}
       - name: Install latest toolchain
         uses: actions-rs/toolchain@v1
         with:
